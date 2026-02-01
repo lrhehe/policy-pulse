@@ -7,7 +7,7 @@ const { generateDailyBriefing, generateWeeklyTrend } = require('./src/analyzer')
 const { generateHTML, generateShell } = require('./src/template');
 
 // Ensure dist exists
-const DIST_DIR = path.join(__dirname, 'doc');
+const DIST_DIR = path.join(__dirname, 'docs');
 if (!fs.existsSync(DIST_DIR)) {
     fs.mkdirSync(DIST_DIR, { recursive: true });
 }
