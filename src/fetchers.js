@@ -10,20 +10,18 @@ const parser = new Parser({
     timeout: 15000
 });
 
-// RSS 数据源配置
+// RSS 数据源配置 - 使用 anyfeeder 第三方聚合服务获取最新内容
 const RSS_FEEDS = {
     peopleDaily: [
-        { name: '时政要闻', url: 'http://www.people.com.cn/rss/politics.xml', category: 'politics' },
-        { name: '社会新闻', url: 'http://www.people.com.cn/rss/society.xml', category: 'society' },
-        { name: '法治新闻', url: 'http://www.people.com.cn/rss/legal.xml', category: 'legal' },
-        { name: '国际新闻', url: 'http://www.people.com.cn/rss/world.xml', category: 'world' },
-        { name: '要闻快讯', url: 'http://www.people.com.cn/rss/ywkx.xml', category: 'breaking' },
+        { name: '人民日报公众号', url: 'https://plink.anyfeeder.com/weixin/rmrbwx', category: 'official' },
+        { name: '人民网时政', url: 'http://www.people.com.cn/rss/politics.xml', category: 'politics' },
+        { name: '人民网社会', url: 'http://www.people.com.cn/rss/society.xml', category: 'society' },
+        { name: '人民网国际', url: 'http://www.people.com.cn/rss/world.xml', category: 'world' },
     ],
     xinhua: [
-        { name: '新华国际', url: 'http://www.xinhuanet.com/world/news_world.xml', category: 'world' },
-        { name: '新华财经', url: 'http://www.xinhuanet.com/fortune/news_fortune.xml', category: 'economy' },
-        { name: '新华军事', url: 'http://www.xinhuanet.com/mil/news_mil.xml', category: 'military' },
-        { name: '新华法治', url: 'http://www.xinhuanet.com/legal/news_legal.xml', category: 'legal' },
+        { name: '新华社微信', url: 'https://plink.anyfeeder.com/newscn/whxw', category: 'official' },
+        // 备用源（可能过时）
+        // { name: '新华网时政', url: 'http://www.xinhuanet.com/politics/news_politics.xml', category: 'politics' },
     ]
 };
 
@@ -65,6 +63,9 @@ async function fetchRSSFeed(feed, sourceName) {
             } else if (item.content) {
                 const $ = cheerio.load(item.content);
                 snippet = $.text().slice(0, 300);
+            } else if (item['content:encoded']) {
+                const $ = cheerio.load(item['content:encoded']);
+                snippet = $.text().slice(0, 300);
             }
 
             const title = item.title?.trim() || '无标题';
@@ -72,16 +73,19 @@ async function fetchRSSFeed(feed, sourceName) {
             // 匹配五年规划分类标签
             const planTags = matchPlanCategories(title, snippet);
 
+            // 保存原始日期字符串用于客户端计算
+            const pubDate = item.pubDate || item.isoDate || new Date().toISOString();
+
             return {
                 title,
                 link: item.link,
                 source: sourceName,
                 feedName: feed.name,
                 category: feed.category,
-                date: item.pubDate || item.isoDate || new Date().toISOString(),
-                snippet: snippet.trim(),
+                date: pubDate,
+                snippet: snippet.trim().replace(/\s+/g, ' '),
                 importance: 80 - (index * 2),
-                planTags // 五年规划关联标签
+                planTags
             };
         });
 
