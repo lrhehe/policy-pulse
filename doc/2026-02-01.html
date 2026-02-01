@@ -1,0 +1,2092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日政策简报</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --accent-primary: #dc2626;
+            --accent-secondary: #f59e0b;
+            --accent-gold: #fbbf24;
+            --gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 3rem;
+            overflow-y: auto;
+        }
+
+        body.embedded header { display: none !important; }
+
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timestamp { font-size: 0.875rem; color: var(--text-secondary); }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            scrollbar-width: none;
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        body:not(.embedded) .tab-nav { top: 80px; }
+        .tab-nav::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--accent-primary);
+        }
+        
+        .tab-btn.plan-tab {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-color: #8b5cf6;
+        }
+        .tab-btn.plan-tab.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.4));
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+
+        /* Five Year Plan Styles */
+        .plan-overview {
+            padding: 1rem 0;
+        }
+        
+        .plan-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-header h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .plan-theme {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-intro {
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        .plan-category {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.2s;
+            border-left: 3px solid var(--cat-color);
+        }
+        
+        .plan-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border-color: var(--cat-color);
+        }
+        
+        .plan-cat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-cat-icon {
+            font-size: 1.5rem;
+        }
+        
+        .plan-cat-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-cat-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        
+        .plan-subtopics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subtopic {
+            background: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-keywords {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        /* Plan Tags on Cards */
+        .plan-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.25rem 0;
+        }
+        
+        .plan-tag {
+            background: color-mix(in srgb, var(--tag-color) 20%, transparent);
+            border: 1px solid color-mix(in srgb, var(--tag-color) 50%, transparent);
+            color: var(--text-primary);
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .plan-tag:hover {
+            background: color-mix(in srgb, var(--tag-color) 40%, transparent);
+            transform: scale(1.05);
+        }
+
+        /* Briefing Box */
+        .briefing-box {
+            background: rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .briefing-title {
+            color: var(--accent-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .briefing-box h3 { 
+            color: var(--accent-secondary); 
+            margin-top: 1.5rem; 
+            margin-bottom: 0.75rem; 
+            font-size: 1rem;
+        }
+        .briefing-box h3:first-child { margin-top: 0; }
+        
+        .briefing-box p { 
+            color: var(--text-secondary); 
+            margin-bottom: 0.75rem; 
+        }
+        
+        .briefing-box strong { 
+            color: var(--text-primary); 
+        }
+
+        /* Card Grid */
+        .grid { 
+            display: grid; 
+            gap: 1.5rem; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+            border-color: rgba(220, 38, 38, 0.3);
+            background: #233045;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .card-source {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            line-height: 1.4; 
+            color: var(--text-primary); 
+        }
+
+        .card-meta { 
+            font-size: 0.75rem; 
+            color: var(--text-tertiary); 
+        }
+
+        .card-snippet { 
+            font-size: 0.85rem; 
+            color: var(--text-secondary); 
+            line-height: 1.5;
+            background: rgba(0,0,0,0.2);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 2px solid var(--text-tertiary);
+        }
+
+        .badge {
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+            font-size: 0.65rem;
+            color: #fff;
+        }
+        .badge.hot { background: var(--accent-primary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.02);
+            border-radius: 1rem;
+        }
+
+        /* Trend Report Box */
+        .trend-report {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(220, 38, 38, 0.05));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .trend-report h2 {
+            color: var(--accent-gold);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .trend-report h2:first-child { margin-top: 0; }
+
+        .trend-report p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .trend-report ul, .trend-report ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .trend-report li { margin-bottom: 0.5rem; }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out backwards; }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .plan-grid { grid-template-columns: 1fr; }
+            .tab-nav { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">政策脉搏 <span style="font-size:0.8em; font-weight:400; opacity:0.7">Report</span></div>
+        <div class="timestamp">生成时间: 2026/2/1 12:03:42</div>
+    </header>
+
+    <nav class="tab-nav">
+        <button class="tab-btn plan-tab active" onclick="openTab('tab-plan')">🏛️ 五年规划</button>
+        <button class="tab-btn" onclick="openTab('tab-peopleDaily')">人民日报</button>
+        <button class="tab-btn" onclick="openTab('tab-xinhua')">新华社</button>
+        <button class="tab-btn" onclick="openTab('tab-trend')">📈 本周趋势</button>
+    </nav>
+
+    <main>
+        <div id="tab-plan" class="tab-content active">
+            
+        <div class="plan-overview">
+            <div class="plan-header">
+            <h2>🏛️ 十五五规划 (2026-2030)</h2>
+            <p class="plan-theme">主题：<strong>新质生产力与高质量发展</strong></p>
+            <p class="plan-intro">国民经济和社会发展第十五个五年规划和2035年远景目标纲要。基于2025年10月二十届四中全会审议通过的建议稿，以下是主要政策领域及其重点方向：</p>
+        </div>
+            <div class="plan-grid">
+                
+        <div class="plan-category" id="plan-new_productivity" style="--cat-color: #8b5cf6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⚡</span>
+                <span class="plan-cat-name">新质生产力</span>
+            </div>
+            <p class="plan-cat-desc">因地制宜培育和发展新质生产力，引领产业升级</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">原始创新</span><span class="subtopic">关键核心技术攻关</span><span class="subtopic">科技成果转化</span><span class="subtopic">创新生态</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 新质生产力、创新驱动、科技创新、颠覆性技术、前沿技术...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-tech_independence" style="--cat-color: #06b6d4">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🔬</span>
+                <span class="plan-cat-name">科技自立自强</span>
+            </div>
+            <p class="plan-cat-desc">高水平科技自立自强，突破关键核心技术</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">国家战略科技力量</span><span class="subtopic">基础研究</span><span class="subtopic">人才强国</span><span class="subtopic">科研体制改革</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 自立自强、卡脖子、芯片、半导体、集成电路...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-modern_industry" style="--cat-color: #3b82f6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏭</span>
+                <span class="plan-cat-name">现代产业体系</span>
+            </div>
+            <p class="plan-cat-desc">建设以先进制造业为骨干的现代化产业体系</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">先进制造业</span><span class="subtopic">传统产业升级</span><span class="subtopic">产业链现代化</span><span class="subtopic">智能化低碳化转型</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 制造强国、质量强国、航天强国、交通强国、网络强国...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-digital_china" style="--cat-color: #0ea5e9">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">💻</span>
+                <span class="plan-cat-name">数字中国</span>
+            </div>
+            <p class="plan-cat-desc">深入推进数字中国建设</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">数字产业化</span><span class="subtopic">产业数字化</span><span class="subtopic">数字政府</span><span class="subtopic">数字社会</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 数字经济、数字化、大数据、云计算、数字政府...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-domestic_demand" style="--cat-color: #f59e0b">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🛒</span>
+                <span class="plan-cat-name">扩大内需</span>
+            </div>
+            <p class="plan-cat-desc">建设强大国内市场，促进消费投资良性互动</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">促进消费</span><span class="subtopic">扩大投资</span><span class="subtopic">供需良性互动</span><span class="subtopic">消费新模式</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 内需、消费、消费升级、扩大内需、双循环...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-reform" style="--cat-color: #ec4899">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⚖️</span>
+                <span class="plan-cat-name">深化改革</span>
+            </div>
+            <p class="plan-cat-desc">构建高水平社会主义市场经济体制</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">经济体制改革</span><span class="subtopic">国企民企发展</span><span class="subtopic">要素市场化</span><span class="subtopic">营商环境优化</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 改革、体制改革、国企改革、民营经济、营商环境...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-opening_up" style="--cat-color: #14b8a6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌐</span>
+                <span class="plan-cat-name">高水平开放</span>
+            </div>
+            <p class="plan-cat-desc">扩大高水平对外开放</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">贸易投资自由化</span><span class="subtopic">跨境电商发展</span><span class="subtopic">国际经贸合作</span><span class="subtopic">优化出口结构</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 开放、外贸、进出口、外资、自贸区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-regional" style="--cat-color: #f97316">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🗺️</span>
+                <span class="plan-cat-name">区域协调</span>
+            </div>
+            <p class="plan-cat-desc">优化区域经济布局，促进协调发展</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">区域重大战略</span><span class="subtopic">城市群发展</span><span class="subtopic">县域发展</span><span class="subtopic">区域协调机制</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 区域协调、京津冀、长三角、粤港澳、大湾区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-urbanization" style="--cat-color: #a855f7">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏙️</span>
+                <span class="plan-cat-name">新型城镇化</span>
+            </div>
+            <p class="plan-cat-desc">建设宜居韧性智慧城市</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">宜居韧性智慧城市</span><span class="subtopic">城乡融合发展</span><span class="subtopic">县域城乡协调</span><span class="subtopic">新型城镇化</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 城镇化、城市群、都市圈、城市更新、老旧小区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-rural" style="--cat-color: #84cc16">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌾</span>
+                <span class="plan-cat-name">乡村振兴</span>
+            </div>
+            <p class="plan-cat-desc">农业农村现代化，确保粮食安全</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">粮食安全</span><span class="subtopic">农业现代化</span><span class="subtopic">乡村建设</span><span class="subtopic">农民增收</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 乡村振兴、农业、农村、农民、三农...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-green" style="--cat-color: #22c55e">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌿</span>
+                <span class="plan-cat-name">美丽中国</span>
+            </div>
+            <p class="plan-cat-desc">推进绿色低碳发展，建设美丽中国</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">双碳目标</span><span class="subtopic">绿色转型</span><span class="subtopic">生态修复</span><span class="subtopic">污染防治</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 绿色、低碳、碳达峰、碳中和、双碳...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-resources" style="--cat-color: #78716c">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⛏️</span>
+                <span class="plan-cat-name">资源安全</span>
+            </div>
+            <p class="plan-cat-desc">战略性矿产资源保障，国土空间优化</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">战略矿产保障</span><span class="subtopic">国土空间规划</span><span class="subtopic">资源高效利用</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 矿产、稀土、锂矿、资源、国土...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-aging" style="--cat-color: #64748b">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">👴</span>
+                <span class="plan-cat-name">应对老龄化</span>
+            </div>
+            <p class="plan-cat-desc">积极应对人口老龄化国家战略</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">养老服务体系</span><span class="subtopic">银发经济</span><span class="subtopic">托育服务</span><span class="subtopic">人口均衡发展</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 老龄化、养老、老年、人口、生育...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-education" style="--cat-color: #6366f1">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">📚</span>
+                <span class="plan-cat-name">教育强国</span>
+            </div>
+            <p class="plan-cat-desc">建设高质量教育体系</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">基础教育</span><span class="subtopic">职业教育</span><span class="subtopic">高等教育</span><span class="subtopic">终身学习</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 教育、学校、高校、大学、职业教育...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-health" style="--cat-color: #ef4444">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏥</span>
+                <span class="plan-cat-name">健康中国</span>
+            </div>
+            <p class="plan-cat-desc">推进健康中国建设，完善医疗服务</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">公共卫生</span><span class="subtopic">医疗服务</span><span class="subtopic">医保改革</span><span class="subtopic">中医药传承</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 健康、医疗、医院、医保、医改...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-welfare" style="--cat-color: #f43f5e">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏠</span>
+                <span class="plan-cat-name">民生福祉</span>
+            </div>
+            <p class="plan-cat-desc">提高人民生活品质，促进共同富裕</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">就业优先</span><span class="subtopic">收入分配</span><span class="subtopic">社会保障</span><span class="subtopic">住房保障</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 民生、就业、收入、社保、住房...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-culture" style="--cat-color: #d946ef">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🎭</span>
+                <span class="plan-cat-name">文化强国</span>
+            </div>
+            <p class="plan-cat-desc">提升社会文明程度，建设文化强国</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">文化事业</span><span class="subtopic">文化产业</span><span class="subtopic">文旅融合</span><span class="subtopic">精神文明</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 文化、文明、文艺、传媒、新闻...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-security" style="--cat-color: #475569">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🛡️</span>
+                <span class="plan-cat-name">国家安全</span>
+            </div>
+            <p class="plan-cat-desc">统筹发展和安全，筑牢安全屏障</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">国家安全体系</span><span class="subtopic">公共安全</span><span class="subtopic">社会治理</span><span class="subtopic">应急管理</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 安全、国家安全、风险、防范、应急...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-ocean" style="--cat-color: #0891b2">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌊</span>
+                <span class="plan-cat-name">海洋强国</span>
+            </div>
+            <p class="plan-cat-desc">建设海洋强国，发展海洋经济</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">海洋经济</span><span class="subtopic">海洋科技</span><span class="subtopic">海洋生态</span><span class="subtopic">海洋权益</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 海洋、海洋经济、海洋强国、港口、船舶...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-governance" style="--cat-color: #94a3b8">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏛️</span>
+                <span class="plan-cat-name">国家治理</span>
+            </div>
+            <p class="plan-cat-desc">推进国家治理体系和治理能力现代化</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">法治中国</span><span class="subtopic">反腐倡廉</span><span class="subtopic">基层治理</span><span class="subtopic">党的建设</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 治理、法治、立法、司法、依法治国...</small>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        </div>
+
+        <div id="tab-peopleDaily" class="tab-content">
+            
+        <section>
+            
+            
+            <div class="grid">
+                
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494898.html" target="_blank" class="card fade-in" style="animation-delay: 0ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">学习卡丨“人不负青山，青山定不负人”</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">生态环境是关系党的使命宗旨的重大政治问题，也是关系民生的重大社会问题。
+ 习近平总书记多次指出，必须站在中华民族永续发展根本大计的高度，尊重自然、顺应自然、保护自然，建设人与自然和谐共生的现代化，建设望得见山、看得见水、记得住乡愁的美丽中国。
+ 今天（6月5日）是世界环境日。如何像保护眼睛一样保护自然和生态环境？一起学习↓↓↓
+ 
+ 
+ 
+ 
+ 
+ 
+ 总监制丨闫帅南
+ 监制丨李浙
+ 主编丨王兴栋...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494899.html" target="_blank" class="card fade-in" style="animation-delay: 30ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">镜观·足迹｜呵护千山万水 擘画永续发展</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f97316" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🗺️ 区域协调
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #0891b2" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌊 海洋强国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">大美中国，江山如画。
+ 党的十八大以来，习近平总书记的考察足迹遍及神州大地。祁连山麓、坝上林海，秦岭深处、黄河之滨，总书记在大江奔涌处谋划千秋大计，在山川锦绣间擘画生态蓝图。一系列重要论述，为新时代生态文明建设提供了根本遵循和行动指南。
+ 
+ 世界环境日到来之际，我们跟随习近平总书记的脚步，一起呵护山水、寄情山水，领悟守护绿水青山、建设生态文明之道。
+ 
+ 江河为脉
+ 心系长江之变，习近平总书记前...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494900.html" target="_blank" class="card fade-in" style="animation-delay: 60ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">学习手记 | “环境就是民生”</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">6月5日是世界环境日，也是我国环境保护法确立的环境日。
+ 22年前的这一天，在时任浙江省委书记习近平部署推动下，以农村人居环境整治为重点的“千万工程”启动。
+ 当时，习近平同志担任浙江省委书记刚半年多，工作千头万绪。他何以将农村人居环境整治作为重点工作？
+ 在基层调研时，习近平同志发现，在浙江经济快速发展的同时，广大农村却面临“成长的烦恼”，村庄面貌不如人意。
+ 全省3.4万个村庄中，人居环境较好...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494881.html" target="_blank" class="card fade-in" style="animation-delay: 90ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">刘国中在安徽调研时强调 全力以赴夺取夏粮丰收 全面打牢秋粮生产基础</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社合肥6月5日电 中共中央政治局委员、国务院副总理刘国中3日至5日到安徽调研“三夏”农业生产工作。他强调，要深入学习贯彻习近平总书记关于国家粮食安全的重要论述，按照党中央、国务院部署，扛稳政治责任，毫不放松抓好夏收夏种夏管，全力以赴夺取夏粮丰收，全面打牢秋粮生产基础，确保完成全年粮食生产目标任务。
+ 刘国中先后来到宿州市、淮南市、六安市，深入小麦机收和夏播现场、农机跨区作业服务点、农事服务中心...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494879.html" target="_blank" class="card fade-in" style="animation-delay: 120ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">韩正会见中美高级别二轨对话美方代表团</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f59e0b" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛒 扩大内需
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 6月5日，国家副主席韩正在北京会见中美高级别二轨对话美方代表团。
+ 韩正表示，中美关系是当今世界最重要的双边关系之一。当前，中美关系处于关键历史节点。中美相互尊重、和平共处、合作共赢，不仅有利于两国，也有利于世界和平与发展。希望中美高级别二轨对话能不断汇聚两国有识之士的真知灼见，增进美国各界对中国的了解和理解，共同推动中美关系稳定、健康、可持续发展。
+ 美方表示，美中高级别二...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494878.html" target="_blank" class="card fade-in" style="animation-delay: 150ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">国务院印发《关于开展第四次全国农业普查的通知》</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电　国务院日前印发《关于开展第四次全国农业普查的通知》（以下简称《通知》）。根据《中华人民共和国统计法》和《全国农业普查条例》规定，国务院决定于2026年开展第四次全国农业普查。
+ 　　《通知》强调，第四次全国农业普查是在以中国式现代化全面推进中华民族伟大复兴的新征程上开展的一项重大国情国力调查，要以习近平新时代中国特色社会主义思想为指导，深入贯彻党的二十大和二十届二中、三中全会...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1024-40494849.html" target="_blank" class="card fade-in" style="animation-delay: 180ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">中央军委主席习近平签署命令 发布《军事设施建设条例》</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 中央军委主席习近平日前签署命令，发布《军事设施建设条例》，自2025年8月1日起施行。
+ 条例深入贯彻习近平强军思想，深入贯彻新时代军事战略方针，聚焦服务备战打仗，适应新的领导指挥体制和保障模式，科学规范军事设施建设的基本原则、管理体制、运行机制和工作制度，是军事设施建设工作的重要依据。
+ 条例共11章63条，按照军委管总、战区主战、军种主建的总原则，围绕理顺建设链、管理链、...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1024-40494847.html" target="_blank" class="card fade-in" style="animation-delay: 210ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">丁薛祥在山西调研时强调 守好公平公正“生命线” 确保实现“平安高考”目标</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #6366f1" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        📚 教育强国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社太原6月5日电　6月3日至4日，中共中央政治局常委、国务院副总理丁薛祥在山西调研高考组织保障和能源改革发展等工作。
+ 　　丁薛祥首先前往山西省招生考试管理中心和太原市晋源区实验中学考点，听取高考工作情况汇报，实地察看考务组织各环节工作情况。他说，高考事关国计民生，关系千家万户切身利益。要认真学习贯彻习近平总书记重要指示精神，贯彻落实党中央和国务院决策部署，确保实现“平安高考”目标。考试招生制...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494813.html" target="_blank" class="card fade-in" style="animation-delay: 240ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">中共中央办公厅印发《党组讨论和决定党员处分事项工作程序规定》</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电　近日，中共中央办公厅印发《党组讨论和决定党员处分事项工作程序规定》，并发出通知，要求各地区各部门认真遵照执行。
+ 　　《党组讨论和决定党员处分事项工作程序规定》全文如下。
+ 　　党组讨论和决定党员处分事项工作程序规定
+ 　　（2018年11月29日中共中央批准　2018年11月29日中共中央办公厅发布　2025年5月26日中共中央修订　2025年5月26日中共中央办公厅发布）...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494812.html" target="_blank" class="card fade-in" style="animation-delay: 270ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">全国人大常委会启动节约能源法执法检查</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 为推动节约能源法全面有效实施，促进更高水平、更高质量做好节能工作，全国人大常委会5日启动节约能源法执法检查。
+ 节约能源法自1998年1月1日实施，并于2007年、2016年、2018年进行了修改。
+ 记者5日从全国人大常委会节约能源法执法检查组第一次全体会议上了解到，为全面深入了解法律实施情况，此次执法检查采取实地检查与委托检查相结合的方式，检查组将赴天津、江苏、湖南、广东...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494792.html" target="_blank" class="card fade-in" style="animation-delay: 300ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">【文脉华章】非遗焕新 生生不息丨用太极招式来炒茶！西湖龙井如何“撩”动全世界的心？</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">showPlayer({scriptId: 'q_v_j-pcz4gxcqyn', videoInfo: [{ src: 'https://video.people.cn/upload/vod/user1739759454736028/1749111129857044/origin.mp4', type: 'video/mp4', label: '源视频', }],posterUrl: 'http...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494795.html" target="_blank" class="card fade-in" style="animation-delay: 330ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">天天学习丨中南海月刊（2025.05）</h3>
+            
+            
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">时维五月，春夏交替。
+ 应邀对俄罗斯进行国事访问并出席纪念苏联伟大卫国战争胜利80周年庆典，用行动展现百年变局下的大国担当；出席中拉论坛第四届部长级会议开幕式，与多国领导人会晤、通话，凝聚团结合作之力应对单边主义逆流；赴河南考察，以一域谋全局，引领擘画下一个五年发展蓝图；纸短情长、殷殷嘱托，汇聚“全面推进强国建设、民族复兴伟业”的伟力……
+ 世界百年变局加速演进之际，习近平主席以大国大党领袖的历史...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494806.html" target="_blank" class="card fade-in" style="animation-delay: 360ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">习语丨“人不负青山，青山定不负人”</h3>
+            
+            
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">showPlayer({scriptId: 'q_v_j-yhpn696mjq', videoInfo: [{ src: 'https://video.people.cn/upload/vod/user1739759454736028/1749111859790390/origin.mp4', type: 'video/mp4', label: '源视频', }],posterUrl: 'http...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494772.html" target="_blank" class="card fade-in" style="animation-delay: 390ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">韩正将赴法国出席联合国海洋大会并访问西班牙</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #0891b2" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌊 海洋强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 外交部发言人5日宣布：国家副主席韩正将应邀于6月7日至13日赴法国尼斯出席联合国海洋大会并访问西班牙。</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494642.html" target="_blank" class="card fade-in" style="animation-delay: 420ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">美丽中国我先行｜“植”此青绿</h3>
+            
+            
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">showPlayer({scriptId: 'q_v_j-odr6n0378xh', videoInfo: [{ src: 'https://video.people.cn/upload/vod/user1739759454736028/1749096624232187/origin.mp4', type: 'video/mp4', label: '源视频', }],posterUrl: 'htt...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494643.html" target="_blank" class="card fade-in" style="animation-delay: 450ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">微视频｜共建清洁美丽世界</h3>
+            
+            
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">showPlayer({scriptId: 'q_v_j-w1vevxy26kp', videoInfo: [{ src: 'https://video.people.cn/upload/vod/user1739759454736028/1749096524371228/origin.mp4', type: 'video/mp4', label: '源视频', }],posterUrl: 'htt...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c1001-40494645.html" target="_blank" class="card fade-in" style="animation-delay: 480ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">学习新语·中华文明丨泱泱中华的文明曙光</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">泱泱中华，历史悠久，文明博大
+ 对于探寻中华文明基因密码
+ 守护中华民族文化根脉
+ 习近平总书记始终饱含深情、念兹在兹
+ “学习新语”栏目推出中华文明系列报道
+ 本期走进浙江杭州良渚
+ 在古城遗址中
+ 感受五千年文明的曙光
+ ↓↓↓
+ 
+ 统筹：黄庆华 周年钧
+ 策划：唐颢宸 冯源 乔煜城
+ 设计：马发展
+ 技术支持：密雅琪</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c458474-40494480.html" target="_blank" class="card fade-in" style="animation-delay: 510ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">多地升级信用修复服务 助力经营主体重塑良好信用</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f59e0b" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛒 扩大内需
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">健全信用修复制度是经营主体信用体系建设的重要内容，是当事人申请解除惩戒措施、重塑信用的制度保障。今年以来，多地深入贯彻党中央、国务院关于全面深化改革、优化营商环境的决策部署，推动企业数据填报“高效办成一件事”和市场监管领域统一信用修复落地见效。
+ 多地完善相关政策
+ 2021年8月，市场监管总局公布《市场监督管理信用修复管理办法》，推动解决信息公示期限较长、信用修复机制不健全等问题。今年以来，在全...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c458474-40494470.html" target="_blank" class="card fade-in" style="animation-delay: 540ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">河南卢氏：“小议事”撬动“大治理”</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #14b8a6" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌐 高水平开放
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">在树下院落、乡间凉亭，一场场热气腾腾的“凉亭夜话”，正悄然改变着河南省三门峡市卢氏县基层治理的面貌。从群众自发到如今党委引领下的制度化实践，“凉亭夜话”不仅成为群众表达心声的平台，也构建起基层治理的创新模式，让“小议事”撬动“大治理”。
+ “凉亭夜话”源于卢氏县木桐乡群众的自发行动。农闲时，村民围坐凉亭、树下，或为化解纠纷说和相劝，或为某一项目献计献策。卢氏县党委因势利导，对此进行规范化、制度化，...</div>
+        </a>
+    
+        <a href="http://politics.people.com.cn/n1/2025/0605/c458474-40494468.html" target="_blank" class="card fade-in" style="animation-delay: 570ms">
+            <div class="card-header">
+                <div class="card-source">时政要闻 </div>
+            </div>
+            
+            <h3 class="card-title">聚力为民解难题办实事</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">【锲而不舍落实中央八项规定精神】 
+ “现在回家再也不用为停车发愁了！收费实惠、管理规范，连周边环境都焕然一新。”近日，湖南省长沙市长沙县泉塘街道楠竹园社区的居民刘琴欣喜地发现，枫树路已实现华丽蝶变：往日拥堵的路面变得井然有序，志愿者在引导有序停车，崭新的人行护栏让居民出行更安全。
+ 这条日均车流量超5000辆次的社区主动脉——枫树路，曾长期陷入停车困局：机动车“叠罗汉”式违停，电动车“见缝插针”...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494897.html" target="_blank" class="card fade-in" style="animation-delay: 600ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">两部门预拨4500万元支持滇藏甘宁做好应急救灾工作</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 今年以来，我国气候呈现旱涝并重，一些地方旱涝急转，局地地质灾害多发。记者5日从财政部了解到，财政部、应急管理部预拨4500万元中央自然灾害救灾资金，支持地方做好应急救灾工作。其中，1500万元用于支持云南防汛救灾，1000万元用于支持西藏做好丁青山体滑坡抢险救援，2000万元用于支持甘肃、宁夏抗旱减灾，最大限度减少人员伤亡、降低灾害损失，保障人民群众生命财产安全。</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494896.html" target="_blank" class="card fade-in" style="animation-delay: 630ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">宁夏卫生健康委员会党组书记、主任吕金捍接受纪律审查和监察调查</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社银川6月5日电 宁夏回族自治区纪委监委5日通报，自治区卫生健康委员会党组书记、主任，自治区中医药管理局局长吕金捍涉嫌严重违纪违法，目前正接受自治区纪委监委纪律审查和监察调查。</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494894.html" target="_blank" class="card fade-in" style="animation-delay: 660ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">高考期间有高温或强降雨！专家提醒做好防范</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">人民网北京6月5日电 （高清扬、温璐）中央气象台预计，6月6日至10日，江淮、江汉、江南北部及西南地区东部等地将有强降雨，并伴有雷暴大风或冰雹等强对流天气。6月5日至9日华北、黄淮及陕西关中等地有35℃以上高温天气，局地气温可达38至40℃。
+ 具体来看，6日至10日，江汉、江淮、江南、华南及西南地区东部等地将有中到大雨，河南东南部、湖北东部、安徽中南部、江苏南部、上海、浙江北部、江西北部、湖南北...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494890.html" target="_blank" class="card fade-in" style="animation-delay: 690ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">住房城乡建设部：建“好房子”不等同于建“大房子”“贵房子”</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电（记者王优玲）国家标准《住宅项目规范》发布实施后受到广泛关注。住房城乡建设部标准定额司司长姚天玮5日表示，建“好房子”不等同于建“大房子”“贵房子”，而是要通过好的设计、好的施工、好的材料、好的服务等，解决居住中的痛点问题，全面提升住房品质。不同地区、不同面积、不同价位都应当有不同的“好房子”。
+ 《住宅项目规范》于今年5月1日起施行。姚天玮在住房城乡建设部5日举行的《住宅项目...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494788.html" target="_blank" class="card fade-in" style="animation-delay: 720ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">山西省政协原党组书记、主席吴存荣严重违纪违法被开除党籍和公职</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">经中共中央批准，中央纪委国家监委对山西省政协原党组书记、主席吴存荣严重违纪违法问题进行了立案审查调查。
+ 经查，吴存荣丧失理想信念，背弃初心使命，贯彻党中央决策部署打折扣、搞变通，推动违规举债融资，履行全面从严治党主体责任不力；违反中央八项规定精神，违规收受礼品礼金，接受可能影响公正执行公务的宴请，违规由他人支付应由个人支付的费用；违反组织原则，在组织谈话函询时不如实说明问题；廉洁底线失守，纵容、...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494698.html" target="_blank" class="card fade-in" style="animation-delay: 750ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">2025年法考将于6月16日起报名</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #6366f1" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        📚 教育强国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电（记者齐琪）司法部5日发布2025年国家统一法律职业资格考试公告，明确客观题考试网上报名时间为6月16日至6月30日，客观题考试时间为9月13日、14日，主观题考试时间为10月12日。
+ 公告明确，2025年继续对法律职业资格考试放宽地区实施降低报考专业学历条件、降分录取的放宽政策，继续允许符合专业学历条件的全日制普通高等学校、军队院校2026年应届本科、硕士及以上学历毕业生（...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494702.html" target="_blank" class="card fade-in" style="animation-delay: 780ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">检察机关依法对杨发森涉嫌受贿案提起公诉</h3>
+            
+            
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电 记者5日从最高人民检察院获悉，青海省委原常委、政法委原书记杨发森涉嫌受贿一案，由国家监察委员会调查终结，经最高人民检察院指定，由陕西省汉中市人民检察院审查起诉。近日，汉中市人民检察院已向汉中市中级人民法院提起公诉。
+ 检察机关在审查起诉阶段，依法告知了被告人杨发森享有的诉讼权利，并讯问了被告人。检察机关起诉指控：被告人杨发森利用担任新疆维吾尔自治区阿克苏地区阿克苏市依干其乡党...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494703.html" target="_blank" class="card fade-in" style="animation-delay: 810ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">人民法院2024年审结各类环境资源一审案件近22万件</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #78716c" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⛏️ 资源安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">新华社北京6月5日电（记者冯家顺、罗沙）记者5日从最高人民法院获悉，2024年人民法院依法公正审结各类环境资源一审案件21.9万件，审结环境公益诉讼一审案件4168件，生态环境损害赔偿一审案件246件，判令责任主体承担生态环境损害赔偿资金共计96亿元。
+ 最高法5日发布的《中国环境资源审判（2024）》显示，人民法院严格贯彻落实环境保护法以及大气、水、土壤、固体废物等污染防治法，依法严惩污染环境、...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494626.html" target="_blank" class="card fade-in" style="animation-delay: 840ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">公安机关依法严厉打击破坏生态环境犯罪</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #0ea5e9" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        💻 数字中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #78716c" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⛏️ 资源安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">人民网北京6月5日电 （记者梁秋坪、郝萍）记者从公安部获悉，公安机关依法严厉打击破坏生态环境犯罪，今年1月至4月，全国共立案侦办相关案件6900余起，抓获犯罪嫌疑人1.3万名；去年以来，公安部挂牌督办大要案件230余起。
+ 工作中，公安机关坚持用最严格制度、最严密法治保护生态环境，推进建立生态警务机制，全面构建专业带动、全警行动、部门联动、群众发动工作格局，对各类破坏环境资源安全犯罪实施精准打击、...</div>
+        </a>
+    
+        <a href="http://society.people.com.cn/n1/2025/0605/c1008-40494343.html" target="_blank" class="card fade-in" style="animation-delay: 870ms">
+            <div class="card-header">
+                <div class="card-source">社会新闻 </div>
+            </div>
+            
+            <h3 class="card-title">华北黄淮等地有高温天气 江淮江南等地将有强降雨</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">8 个月前</div>
+            
+            <div class="card-snippet">人民网北京6月5日电 （温璐、高清扬）据中央气象台消息，昨日，全国大部地区降水较弱，云南、青海、黑龙江等地出现中到大雨，广东、广西、海南岛等局地出现暴雨或大暴雨。预计未来三天，东北地区多阵雨和局地强对流天气，江汉、江淮、江南等地有强降雨过程，注意防范暴雨次生灾害和局地强对流危害；华北、黄淮及陕西关中等地有高温天气，建议做好防暑降温、能源供应、防火等工作。
+ 华北黄淮等地有高温天气
+ 6月5日至6月...</div>
+        </a>
+    
+            </div>
+        </section>
+        
+        </div>
+
+        <div id="tab-xinhua" class="tab-content">
+            
+        <section>
+            
+            
+            <div class="grid">
+                
+        <a href="http://www.xinhuanet.com/legal/2017-04/24/c_1120866053.htm" target="_blank" class="card fade-in" style="animation-delay: 0ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">广东检察机关将强化与海关环保部门合作打击“洋垃圾”</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #22c55e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌿 美丽中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">广东省人民检察院24日通报，广东检察机关与海关、环保等执法部门将强化衔接配合，加大对走私“洋垃圾”犯罪案件的打击力度。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/24/c_1120866065.htm" target="_blank" class="card fade-in" style="animation-delay: 30ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">云南：境外追逃、劝返22名职务犯罪嫌疑人</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">云南省纪委24日发布消息称，自“天网”行动开展以来，云南省境外追逃、劝返职务犯罪嫌疑人共22人，追回赃款11790万余元。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/24/c_1120866056.htm" target="_blank" class="card fade-in" style="animation-delay: 60ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">广西集中销毁58.5万件侵权盗版制品及非法出版物</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">广西以南宁市为主会场，其他各市设分会场, 统一开展2017年侵权盗版及非法出版物集中销毁活动，集中销毁侵权盗版非法图书、报刊、音像制品、电子出版物和计算机软件等共计58.5万件。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/24/c_1120866051.htm" target="_blank" class="card fade-in" style="animation-delay: 90ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">西安地铁三号线“问题电缆”事件11人因严重违纪被开除党籍</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">在西安地铁三号线“问题电缆”事件中，西安市地下铁道有限责任公司5人、西安市质监局6人严重违纪被开除党籍，其中西安市地下铁道有限责任公司包括被开除党籍的5人在内共有6人涉嫌犯罪问题移送司法机关调查处理。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/19/c_1120836460.htm" target="_blank" class="card fade-in" style="animation-delay: 120ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">暗访野生鸟类地下交易链：几十元买鹰可卖上千元</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">暖风渐起，嫩芽吐绿，候鸟随春而来，留鸟伴暖阳起飞。这些翻山越河的空中精灵，本该翱翔于蓝天之下，它们中的很多却没能躲过一张张细如发丝的大网。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/19/c_1120836119.htm" target="_blank" class="card fade-in" style="animation-delay: 150ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">江苏灌云某中学截留贫困生助学金 有些学生因此辍学</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">据中国之声《新闻纵横》报道，“这些贫困生助学金不能发，前一任校长一直就没发，现在发给学生会引起混乱的。”</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/19/c_1120833834.htm" target="_blank" class="card fade-in" style="animation-delay: 180ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">穷乡镇出千万级贪官：贪污款留女儿 买的豪宅从没住</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #64748b" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        👴 应对老龄化
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">于集乡是山东省德州市陵城区一个名不见经传的小乡镇，1.8万人口，3.95万亩耕地，经济发展水平低。可就在这个人均年收入不足万元的穷乡镇，却出现了一位“千万元”级别的贪官。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/19/c_1120833554.htm" target="_blank" class="card fade-in" style="animation-delay: 210ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">爆“虚假理财”产品案 民生银行将承担哪些责任？</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">昨日，新京报记者从民生银行证实，该行航天桥支行行长张颖涉嫌违法行为，民生银行已向公安部门报案，涉案金额还在调查中。北京市海淀区公安分局昨日向记者证实，张颖已被海淀警方刑事拘留。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/19/c_1120833500.htm" target="_blank" class="card fade-in" style="animation-delay: 240ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">中纪委：一季度14名省部级干部被处分</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">昨日，中纪委通报了今年第一季度全国纪检监察机关纪律审查情况。通报显示，一季度全国纪检监察机关立案10.2万件，处分8.5万人（党纪处分7.1万人），包括14名省部级干部。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-07/12/c_1121309194.htm" target="_blank" class="card fade-in" style="animation-delay: 270ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">上半年检察机关查处职务犯罪人数同比增长近两成</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">今年上半年，除北京、山西、浙江三个试点地区外，全国检察机关在其他29个省份立案侦查贪污贿赂、渎职侵权等职务犯罪30538人，同比上升19.6%。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-06/07/c_1121098682.htm" target="_blank" class="card fade-in" style="animation-delay: 300ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">青岛每户居民限养1只犬 藏獒等烈性犬不得饲养</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">每户居民限养1只犬、需登记并缴400元服务费、违者最高罚2000元……近日，青岛发布《青岛市养犬管理条例》(简称《条例》)，作为规范养犬管理的地方性法规，6月8日正式实施。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-05/27/c_1121045529.htm" target="_blank" class="card fade-in" style="animation-delay: 330ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">江苏:去年以来批捕100名校园欺凌犯罪嫌疑人</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">去年以来，江苏检察机关共受理提请批准逮捕的涉嫌校园欺凌违法犯罪嫌疑人133人，经审查，批准逮捕100人；受理移送审查起诉452人，经审查，提起公诉329人。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-05/10/c_1120948909.htm" target="_blank" class="card fade-in" style="animation-delay: 360ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">浙江三级检察机关职务犯罪侦防职能及人员已完成转隶</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">记者从浙江省检察院获悉，浙江三级检察机关职务犯罪侦防职能及相关人员目前已完成转隶。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-05/10/c_1120945896.htm" target="_blank" class="card fade-in" style="animation-delay: 390ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">微整形注射培训班通过销售假药牟利 涉案金额1.2亿元</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">5月8日,在浙江省丽水市遂昌县公安局大厅,警方缴获的玻尿酸、骨胶原等假药、假医疗器材铺了满满一桌,此前,这些药品被打上“原装进口”的标签后,身价猛翻。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/28/c_1120892934.htm" target="_blank" class="card fade-in" style="animation-delay: 420ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">广东江门市长邓伟根涉嫌严重违纪被审查</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">广东省纪委28日对外通报，江门市委副书记、市长邓伟根因涉嫌严重违纪问题，正在接受组织审查。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/28/c_1120892921.htm" target="_blank" class="card fade-in" style="animation-delay: 450ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">山东检察机关依法受理“宋振宁被电信诈骗案”审查起诉</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">记者２８日从检察机关获悉，最高人民检察院、公安部联合挂牌督办的“宋振宁被电信诈骗案”，经山东省临沂市公安机关侦查终结，于近日移送检察机关审查起诉。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/28/c_1120892869.htm" target="_blank" class="card fade-in" style="animation-delay: 480ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">食药监总局：厦门乳企恒信乐健公司涉嫌违法生产</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">记者２８日从国家食品药品监督管理总局了解到，食药监总局近期对恒信乐健（厦门）生物技术有限公司进行食品安全生产规范体系检查发现，该公司存在生产和管理缺陷，涉嫌违法生产。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/27/c_1120885006.htm" target="_blank" class="card fade-in" style="animation-delay: 510ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">被骗老人子女痛说不堪回首的往事：传销毁了老爸的晚年</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">“25日鸟巢召开富民大会，现场可领5万元慈善金”，随着警方与媒体的辟谣和报道，这场骗局终于落下了大幕。曾经深陷其中的很多家庭，其遭遇也逐渐浮出了水面。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/26/c_1120879873.htm" target="_blank" class="card fade-in" style="animation-delay: 540ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">“黑社会老大”电话敲诈“拿钱消灾” 警方揭骗局</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">江苏警方26日发布预警：如果接到电话，对方先是叫出你的名字，接着自称是黑社会大哥找你寻仇，让你出钱消灾，这十有八九是诈骗电话。</div>
+        </a>
+    
+        <a href="http://www.xinhuanet.com/legal/2017-04/26/c_1120879694.htm" target="_blank" class="card fade-in" style="animation-delay: 570ms">
+            <div class="card-header">
+                <div class="card-source">新华法治 </div>
+            </div>
+            
+            <h3 class="card-title">非法集资案件 数量金额首现“双降”</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">昨天下午，最高人民法院、最高人民检察院、人民银行、银监会等14家机构召开处置非法集资部际联席会议，通报了2016年全国打击非法集资案件的成果。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129207194.htm" target="_blank" class="card fade-in" style="animation-delay: 600ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">多地精准助企纾困 全力推动复工复产</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">连日来，多地密集部署调整优化疫情防控措施，精准施策助企纾困，全力推进复工复产，确保今年“收好官”、明年“开好局”。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/13/c_1211709288.htm" target="_blank" class="card fade-in" style="animation-delay: 630ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">“小棉袄”引领乡村振兴致富路</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #84cc16" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🌾 乡村振兴
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/13/c_1211709286.htm" target="_blank" class="card fade-in" style="animation-delay: 660ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">浙江德清：召开“寻美浙江 爱在湖州”新联助富现场会</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206432.htm" target="_blank" class="card fade-in" style="animation-delay: 690ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">加强和完善现代金融监管（认真学习宣传贯彻党的二十大精神）</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">党的二十大报告提出，加强和完善现代金融监管，强化金融稳定保障体系，依法将各类金融活动全部纳入监管，守住不发生系统性风险底线。必须按照党中央决策部署，深化金融体制改革，推进金融安全网建设，持续强化金融风险防控能力。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206595.htm" target="_blank" class="card fade-in" style="animation-delay: 720ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">勇毅前行，中国经济行稳致远</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">今年以来，面对风高浪急的国际环境和艰巨繁重的国内改革发展稳定任务，以习近平同志为核心的党中央团结带领全党全国各族人民迎难而上，全面落实疫情要防住、经济要稳住、发展要安全的要求，统筹国内国际两个大局，统筹疫情防控和经济社会发展，统筹发展和安全，加大宏观调控力度，保持了经济社会大局稳定。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206444.htm" target="_blank" class="card fade-in" style="animation-delay: 750ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">全国14座城市住户存款超1万亿元——哪些城市居民存款较多</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">住户存款是银行业金融机构通过信用方式吸收的居民储蓄存款及通过其他方式吸收的由住户部门支配的存款。住户存款在区域分布上有何特点？近日，各地统计部门陆续公布各城市2021年末住户存款余额。数据显示，中国已有14个城市住户存款余额超1万亿元。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206440.htm" target="_blank" class="card fade-in" style="animation-delay: 780ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">11月份，全国居民消费价格涨幅有所回落——中国物价继续平稳运行</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f59e0b" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛒 扩大内需
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">国家统计局日前公布的数据显示，11月份，全国居民消费价格指数（CPI）同比上涨1.6%，涨幅比上月回落0.5个百分点；环比由上月上涨0.1%转为下降0.2%。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206420.htm" target="_blank" class="card fade-in" style="animation-delay: 810ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">中国第一高楼出租率逆市上扬背后的经济韧性密码</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">世界500强企业租户面积占比30%以上，办公出租率达到80%，商业出租率约98%……在上海陆家嘴金融城，办公体量超过20万平方米的中国第一高楼上海中心，表现出强劲韧性，出租率逆势上升。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206427.htm" target="_blank" class="card fade-in" style="animation-delay: 840ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">纽约股市三大股指13日上涨</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">纽约股市三大股指13日上涨。</div>
+        </a>
+    
+        <a href="http://www.news.cn/fortune/2022-12/14/c_1129206426.htm" target="_blank" class="card fade-in" style="animation-delay: 870ms">
+            <div class="card-header">
+                <div class="card-source">新华财经 </div>
+            </div>
+            
+            <h3 class="card-title">美元指数13日大幅下跌</h3>
+            
+            
+            
+            <div class="card-meta">不到 1 分钟前</div>
+            
+            <div class="card-snippet">美元指数13日大幅下跌。</div>
+        </a>
+    
+            </div>
+        </section>
+        
+        </div>
+
+        <div id="tab-trend" class="tab-content">
+            
+                <div class="empty-state">
+                    <p>📊 周趋势报告正在生成中...</p>
+                    <p style="font-size: 0.9em; opacity: 0.7">需要累积数天数据后才能生成趋势分析</p>
+                </div>
+            
+        </div>
+    </main>
+
+    <script>
+        if (window.self !== window.top) {
+            document.body.classList.add('embedded');
+        }
+
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+    </script>
+</body>
+</html>
