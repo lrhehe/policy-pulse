@@ -11,16 +11,18 @@ const parser = new Parser({
 });
 
 // RSS 数据源配置 - 使用 anyfeeder 第三方聚合服务获取最新内容
+// 注意：人民网和新华网官方RSS已停止更新（数据停留在2025年6月），故使用第三方聚合服务
 const RSS_FEEDS = {
     peopleDaily: [
         { name: '人民日报公众号', url: 'https://plink.anyfeeder.com/weixin/rmrbwx', category: 'official' },
-        { name: '人民网时政', url: 'http://www.people.com.cn/rss/politics.xml', category: 'politics' },
-        { name: '人民网社会', url: 'http://www.people.com.cn/rss/society.xml', category: 'society' },
-        { name: '人民网国际', url: 'http://www.people.com.cn/rss/world.xml', category: 'world' },
+        // 以下官方源已停更（2025年6月），暂时禁用
+        // { name: '人民网时政', url: 'http://www.people.com.cn/rss/politics.xml', category: 'politics' },
+        // { name: '人民网社会', url: 'http://www.people.com.cn/rss/society.xml', category: 'society' },
+        // { name: '人民网国际', url: 'http://www.people.com.cn/rss/world.xml', category: 'world' },
     ],
     xinhua: [
         { name: '新华社微信', url: 'https://plink.anyfeeder.com/newscn/whxw', category: 'official' },
-        // 备用源（可能过时）
+        // 以下官方源已停更（2022年12月），暂时禁用
         // { name: '新华网时政', url: 'http://www.xinhuanet.com/politics/news_politics.xml', category: 'politics' },
     ]
 };
