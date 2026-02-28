@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日政策简报</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --accent-primary: #dc2626;
+            --accent-secondary: #f59e0b;
+            --accent-gold: #fbbf24;
+            --gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'PingFang SC', system-ui, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding-bottom: 3rem;
+            overflow-y: auto;
+        }
+
+        body.embedded header { display: none !important; }
+
+        header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .timestamp { font-size: 0.875rem; color: var(--text-secondary); }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            overflow-x: auto;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            scrollbar-width: none;
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+        body:not(.embedded) .tab-nav { top: 80px; }
+        .tab-nav::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--accent-primary);
+        }
+        
+        .tab-btn.plan-tab {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-color: #8b5cf6;
+        }
+        .tab-btn.plan-tab.active {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.4), rgba(6, 182, 212, 0.4));
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .tab-content { display: none; animation: fadeIn 0.3s ease-out; }
+        .tab-content.active { display: block; }
+
+        /* Five Year Plan Styles */
+        .plan-overview {
+            padding: 1rem 0;
+        }
+        
+        .plan-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-header h2 {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .plan-theme {
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-intro {
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .plan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+        }
+        
+        .plan-category {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            transition: all 0.2s;
+            border-left: 3px solid var(--cat-color);
+        }
+        
+        .plan-category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border-color: var(--cat-color);
+        }
+        
+        .plan-cat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-cat-icon {
+            font-size: 1.5rem;
+        }
+        
+        .plan-cat-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-cat-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        
+        .plan-subtopics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .subtopic {
+            background: rgba(255,255,255,0.08);
+            padding: 0.2rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+        
+        .plan-keywords {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        /* Plan Tags on Cards */
+        .plan-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.25rem 0;
+        }
+        
+        .plan-tag {
+            background: color-mix(in srgb, var(--tag-color) 20%, transparent);
+            border: 1px solid color-mix(in srgb, var(--tag-color) 50%, transparent);
+            color: var(--text-primary);
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .plan-tag:hover {
+            background: color-mix(in srgb, var(--tag-color) 40%, transparent);
+            transform: scale(1.05);
+        }
+
+        /* Briefing Box */
+        .briefing-box {
+            background: rgba(220, 38, 38, 0.05);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .briefing-title {
+            color: var(--accent-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .briefing-box h3 { 
+            color: var(--accent-secondary); 
+            margin-top: 1.5rem; 
+            margin-bottom: 0.75rem; 
+            font-size: 1rem;
+        }
+        .briefing-box h3:first-child { margin-top: 0; }
+        
+        .briefing-box p { 
+            color: var(--text-secondary); 
+            margin-bottom: 0.75rem; 
+        }
+        
+        .briefing-box strong { 
+            color: var(--text-primary); 
+        }
+
+        /* Card Grid */
+        .grid { 
+            display: grid; 
+            gap: 1.5rem; 
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+            border-color: rgba(220, 38, 38, 0.3);
+            background: #233045;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .card-source {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--accent-secondary);
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            line-height: 1.4; 
+            color: var(--text-primary); 
+        }
+
+        .card-meta { 
+            font-size: 0.75rem; 
+            color: var(--text-tertiary); 
+        }
+
+        .card-snippet { 
+            font-size: 0.85rem; 
+            color: var(--text-secondary); 
+            line-height: 1.5;
+            background: rgba(0,0,0,0.2);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 2px solid var(--text-tertiary);
+        }
+
+        .badge {
+            padding: 0.1rem 0.3rem;
+            border-radius: 0.2rem;
+            font-size: 0.65rem;
+            color: #fff;
+        }
+        .badge.hot { background: var(--accent-primary); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-secondary);
+            background: rgba(255,255,255,0.02);
+            border-radius: 1rem;
+        }
+
+        /* Trend Report Box */
+        .trend-report {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(220, 38, 38, 0.05));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .trend-report h2 {
+            color: var(--accent-gold);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .trend-report h2:first-child { margin-top: 0; }
+
+        .trend-report p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .trend-report ul, .trend-report ol {
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .trend-report li { margin-bottom: 0.5rem; }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out backwards; }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .plan-grid { grid-template-columns: 1fr; }
+            .tab-nav { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">政策脉搏 <span style="font-size:0.8em; font-weight:400; opacity:0.7">Report</span></div>
+        <div class="timestamp">生成时间: 2026/2/28 08:26:58</div>
+    </header>
+
+    <nav class="tab-nav">
+        <button class="tab-btn plan-tab active" onclick="openTab('tab-plan')">🏛️ 五年规划</button>
+        <button class="tab-btn" onclick="openTab('tab-peopleDaily')">人民日报</button>
+        <button class="tab-btn" onclick="openTab('tab-xinhua')">新华社</button>
+        <button class="tab-btn" onclick="openTab('tab-trend')">📈 本周趋势</button>
+    </nav>
+
+    <main>
+        <div id="tab-plan" class="tab-content active">
+            
+        <div class="plan-overview">
+            <div class="plan-header">
+            <h2>🏛️ 十五五规划 (2026-2030)</h2>
+            <p class="plan-theme">主题：<strong>新质生产力与高质量发展</strong></p>
+            <p class="plan-intro">国民经济和社会发展第十五个五年规划和2035年远景目标纲要。基于2025年10月二十届四中全会审议通过的建议稿，以下是主要政策领域及其重点方向：</p>
+        </div>
+            <div class="plan-grid">
+                
+        <div class="plan-category" id="plan-new_productivity" style="--cat-color: #8b5cf6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⚡</span>
+                <span class="plan-cat-name">新质生产力</span>
+            </div>
+            <p class="plan-cat-desc">因地制宜培育和发展新质生产力，引领产业升级</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">原始创新</span><span class="subtopic">关键核心技术攻关</span><span class="subtopic">科技成果转化</span><span class="subtopic">创新生态</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 新质生产力、创新驱动、科技创新、颠覆性技术、前沿技术...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-tech_independence" style="--cat-color: #06b6d4">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🔬</span>
+                <span class="plan-cat-name">科技自立自强</span>
+            </div>
+            <p class="plan-cat-desc">高水平科技自立自强，突破关键核心技术</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">国家战略科技力量</span><span class="subtopic">基础研究</span><span class="subtopic">人才强国</span><span class="subtopic">科研体制改革</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 自立自强、卡脖子、芯片、半导体、集成电路...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-modern_industry" style="--cat-color: #3b82f6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏭</span>
+                <span class="plan-cat-name">现代产业体系</span>
+            </div>
+            <p class="plan-cat-desc">建设以先进制造业为骨干的现代化产业体系</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">先进制造业</span><span class="subtopic">传统产业升级</span><span class="subtopic">产业链现代化</span><span class="subtopic">智能化低碳化转型</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 制造强国、质量强国、航天强国、交通强国、网络强国...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-digital_china" style="--cat-color: #0ea5e9">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">💻</span>
+                <span class="plan-cat-name">数字中国</span>
+            </div>
+            <p class="plan-cat-desc">深入推进数字中国建设</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">数字产业化</span><span class="subtopic">产业数字化</span><span class="subtopic">数字政府</span><span class="subtopic">数字社会</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 数字经济、数字化、大数据、云计算、数字政府...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-domestic_demand" style="--cat-color: #f59e0b">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🛒</span>
+                <span class="plan-cat-name">扩大内需</span>
+            </div>
+            <p class="plan-cat-desc">建设强大国内市场，促进消费投资良性互动</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">促进消费</span><span class="subtopic">扩大投资</span><span class="subtopic">供需良性互动</span><span class="subtopic">消费新模式</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 内需、消费、消费升级、扩大内需、双循环...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-reform" style="--cat-color: #ec4899">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⚖️</span>
+                <span class="plan-cat-name">深化改革</span>
+            </div>
+            <p class="plan-cat-desc">构建高水平社会主义市场经济体制</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">经济体制改革</span><span class="subtopic">国企民企发展</span><span class="subtopic">要素市场化</span><span class="subtopic">营商环境优化</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 改革、体制改革、国企改革、民营经济、营商环境...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-opening_up" style="--cat-color: #14b8a6">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌐</span>
+                <span class="plan-cat-name">高水平开放</span>
+            </div>
+            <p class="plan-cat-desc">扩大高水平对外开放</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">贸易投资自由化</span><span class="subtopic">跨境电商发展</span><span class="subtopic">国际经贸合作</span><span class="subtopic">优化出口结构</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 开放、外贸、进出口、外资、自贸区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-regional" style="--cat-color: #f97316">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🗺️</span>
+                <span class="plan-cat-name">区域协调</span>
+            </div>
+            <p class="plan-cat-desc">优化区域经济布局，促进协调发展</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">区域重大战略</span><span class="subtopic">城市群发展</span><span class="subtopic">县域发展</span><span class="subtopic">区域协调机制</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 区域协调、京津冀、长三角、粤港澳、大湾区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-urbanization" style="--cat-color: #a855f7">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏙️</span>
+                <span class="plan-cat-name">新型城镇化</span>
+            </div>
+            <p class="plan-cat-desc">建设宜居韧性智慧城市</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">宜居韧性智慧城市</span><span class="subtopic">城乡融合发展</span><span class="subtopic">县域城乡协调</span><span class="subtopic">新型城镇化</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 城镇化、城市群、都市圈、城市更新、老旧小区...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-rural" style="--cat-color: #84cc16">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌾</span>
+                <span class="plan-cat-name">乡村振兴</span>
+            </div>
+            <p class="plan-cat-desc">农业农村现代化，确保粮食安全</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">粮食安全</span><span class="subtopic">农业现代化</span><span class="subtopic">乡村建设</span><span class="subtopic">农民增收</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 乡村振兴、农业、农村、农民、三农...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-green" style="--cat-color: #22c55e">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌿</span>
+                <span class="plan-cat-name">美丽中国</span>
+            </div>
+            <p class="plan-cat-desc">推进绿色低碳发展，建设美丽中国</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">双碳目标</span><span class="subtopic">绿色转型</span><span class="subtopic">生态修复</span><span class="subtopic">污染防治</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 绿色、低碳、碳达峰、碳中和、双碳...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-resources" style="--cat-color: #78716c">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">⛏️</span>
+                <span class="plan-cat-name">资源安全</span>
+            </div>
+            <p class="plan-cat-desc">战略性矿产资源保障，国土空间优化</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">战略矿产保障</span><span class="subtopic">国土空间规划</span><span class="subtopic">资源高效利用</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 矿产、稀土、锂矿、资源、国土...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-aging" style="--cat-color: #64748b">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">👴</span>
+                <span class="plan-cat-name">应对老龄化</span>
+            </div>
+            <p class="plan-cat-desc">积极应对人口老龄化国家战略</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">养老服务体系</span><span class="subtopic">银发经济</span><span class="subtopic">托育服务</span><span class="subtopic">人口均衡发展</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 老龄化、养老、老年、人口、生育...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-education" style="--cat-color: #6366f1">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">📚</span>
+                <span class="plan-cat-name">教育强国</span>
+            </div>
+            <p class="plan-cat-desc">建设高质量教育体系</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">基础教育</span><span class="subtopic">职业教育</span><span class="subtopic">高等教育</span><span class="subtopic">终身学习</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 教育、学校、高校、大学、职业教育...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-health" style="--cat-color: #ef4444">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏥</span>
+                <span class="plan-cat-name">健康中国</span>
+            </div>
+            <p class="plan-cat-desc">推进健康中国建设，完善医疗服务</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">公共卫生</span><span class="subtopic">医疗服务</span><span class="subtopic">医保改革</span><span class="subtopic">中医药传承</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 健康、医疗、医院、医保、医改...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-welfare" style="--cat-color: #f43f5e">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏠</span>
+                <span class="plan-cat-name">民生福祉</span>
+            </div>
+            <p class="plan-cat-desc">提高人民生活品质，促进共同富裕</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">就业优先</span><span class="subtopic">收入分配</span><span class="subtopic">社会保障</span><span class="subtopic">住房保障</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 民生、就业、收入、社保、住房...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-culture" style="--cat-color: #d946ef">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🎭</span>
+                <span class="plan-cat-name">文化强国</span>
+            </div>
+            <p class="plan-cat-desc">提升社会文明程度，建设文化强国</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">文化事业</span><span class="subtopic">文化产业</span><span class="subtopic">文旅融合</span><span class="subtopic">精神文明</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 文化、文明、文艺、传媒、新闻...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-security" style="--cat-color: #475569">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🛡️</span>
+                <span class="plan-cat-name">国家安全</span>
+            </div>
+            <p class="plan-cat-desc">统筹发展和安全，筑牢安全屏障</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">国家安全体系</span><span class="subtopic">公共安全</span><span class="subtopic">社会治理</span><span class="subtopic">应急管理</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 安全、国家安全、风险、防范、应急...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-ocean" style="--cat-color: #0891b2">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🌊</span>
+                <span class="plan-cat-name">海洋强国</span>
+            </div>
+            <p class="plan-cat-desc">建设海洋强国，发展海洋经济</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">海洋经济</span><span class="subtopic">海洋科技</span><span class="subtopic">海洋生态</span><span class="subtopic">海洋权益</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 海洋、海洋经济、海洋强国、港口、船舶...</small>
+            </div>
+        </div>
+    
+        <div class="plan-category" id="plan-governance" style="--cat-color: #94a3b8">
+            <div class="plan-cat-header">
+                <span class="plan-cat-icon">🏛️</span>
+                <span class="plan-cat-name">国家治理</span>
+            </div>
+            <p class="plan-cat-desc">推进国家治理体系和治理能力现代化</p>
+            <div class="plan-subtopics">
+                <span class="subtopic">法治中国</span><span class="subtopic">反腐倡廉</span><span class="subtopic">基层治理</span><span class="subtopic">党的建设</span>
+            </div>
+            <div class="plan-keywords">
+                <small>关键词: 治理、法治、立法、司法、依法治国...</small>
+            </div>
+        </div>
+    
+            </div>
+        </div>
+    
+        </div>
+
+        <div id="tab-peopleDaily" class="tab-content">
+            
+        <section>
+            
+            <div class="briefing-box">
+                <h3 class="briefing-title">📋 AI 要点摘要</h3>
+                <h3>🔹 强化公民海外安全风险预警与领事保护</h3>
+<p><strong>背景与意义</strong>：新闻“重要提醒：尽快撤离伊朗！”反映了当前国际地缘政治局势的复杂性与高风险性。这体现了中国政府高度关注海外公民与机构的安全，通过权威媒体发布紧急预警，是外交部领事保护与协助工作机制的常态化、即时化体现。此举旨在最大限度保障我国公民生命安全，也提醒公民需密切关注官方安全提醒，增强海外风险防范意识。</p>
+<h3>🔹 关注医疗人文关怀与服务质量提升</h3>
+<p><strong>背景与意义</strong>：“抢救室里，‘医生叫来美甲师’引热议”这一新闻虽个案特殊，但背后折射出社会对医疗服务质量与人文关怀的更高期待。这呼应了国家持续深化医疗卫生服务体系改革、推动医疗服务更加人性化、精细化的政策导向。事件引发热议，有助于推动医疗机构在紧急救治中，探索如何在遵守医疗规范的前提下，更好地兼顾患者的心理与尊严需求。</p>
+<h3>🔹 倡导科学健康的家庭教育观念</h3>
+<p><strong>背景与意义</strong>：“【夜读】这4件事，建议父母最好不要和孩子分享”属于家庭教育指导类内容。这契合了当前国家层面高度重视家庭家教家风建设，推动《家庭教育促进法》落地实施的背景。文章通过具体建议，引导父母树立边界意识，注重保护孩子心理健康，营造有利于未成年人健康成长的家庭环境，是构建健康亲子关系、落实“依法带娃”理念的微观体现。</p>
+<h3>🔹 重视科普宣传与公众科学素养培育</h3>
+<p><strong>背景与意义</strong>：“记得抬头！2026年‘头号天象’要来了~”这类天文科普内容在主流媒体出现，是国家加强科学普及、提升全民科学素养的体现。它服务于建设创新型国家的战略目标，通过预告重要科学现象，激发公众尤其是青少年对自然科学的兴趣，营造热爱科学、崇尚创新的社会氛围。</p>
+<h3>🔹 密切关注国际政治动态与地区稳定</h3>
+<p><strong>背景与意义</strong>：提及“高市早苗有麻烦了”涉及日本国内政治人物动态。作为权威媒体，此类信息的选择性报道，通常与中日关系及地区局势的宏观背景相关联。它传递出中国对周边国家政治走向、特别是涉华立场强硬派人物动态保持密切关注的态度，其报道基调间接反映了中方维护地区稳定、关注外部政治环境变化的立场。</p>
+
+            </div>
+        
+            
+            <div class="grid">
+                
+        <a href="http://weixin.sogou.com/weixin?type=2&query=%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5+%E3%80%90%E5%A4%9C%E8%AF%BB%E3%80%91%E8%BF%994%E4%BB%B6%E4%BA%8B%EF%BC%8C%E5%BB%BA%E8%AE%AE%E7%88%B6%E6%AF%8D%E6%9C%80%E5%A5%BD%E4%B8%8D%E8%A6%81%E5%92%8C%E5%AD%A9%E5%AD%90%E5%88%86%E4%BA%AB" target="_blank" class="card fade-in" style="animation-delay: 0ms">
+            <div class="card-header">
+                <div class="card-source">人民日报公众号 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">【夜读】这4件事，建议父母最好不要和孩子分享</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 21:30:00 +0800"></div>
+            
+            <div class="card-snippet">不要分享自己的怨气 生活难免有不如意，会让父母生出些许怨气，只是这份低落的情绪，最好不要随口说给孩子听，让家里的饭桌旁、睡前的闲聊中都蒙上压抑的底色。 父母本是孩子的避风港，与其让孩子跟着父母一起承担负面情绪，不如学着把怨气化解。哪怕只是独处片刻平复心情，或是和朋友聊聊纾解压力，都别让孩子成为父母情绪的“垃圾桶”。 把和颜悦色的样子留给孩子，让家里始终有轻松的笑声、温暖的氛围，孩子的心灵才能舒展生...</div>
+        </a>
+    
+        <a href="http://weixin.sogou.com/weixin?type=2&query=%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5+%E6%8A%A2%E6%95%91%E5%AE%A4%E9%87%8C%EF%BC%8C%E2%80%9C%E5%8C%BB%E7%94%9F%E5%8F%AB%E6%9D%A5%E7%BE%8E%E7%94%B2%E5%B8%88%E2%80%9D%E5%BC%95%E7%83%AD%E8%AE%AE" target="_blank" class="card fade-in" style="animation-delay: 30ms">
+            <div class="card-header">
+                <div class="card-source">人民日报公众号 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">抢救室里，“医生叫来美甲师”引热议</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 19:29:00 +0800"></div>
+            
+            <div class="card-snippet">心跳骤停，却因美甲阻碍抢救？近日，急救医生请美甲师“救命”的消息引发网友热议据媒体报道，日前，28岁的女子丽丽（化名）突发暴发性心肌炎，命悬一线，被送至湖南省人民医院抢救。然而，医生抢救时却遇到了阻碍——丽丽十个指头做了长款美甲。厚重的甲油胶与延长甲片，直接阻碍了指脉氧仪的光线穿透，导致仪器无法正常工作。医护人员尝试自行卸甲，但因美甲材质特殊未能成功。为不耽误抢救时机，医院紧急联系专业美甲师携带工...</div>
+        </a>
+    
+        <a href="http://weixin.sogou.com/weixin?type=2&query=%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5+%E9%87%8D%E8%A6%81%E6%8F%90%E9%86%92%EF%BC%9A%E5%B0%BD%E5%BF%AB%E6%92%A4%E7%A6%BB%E4%BC%8A%E6%9C%97%EF%BC%81" target="_blank" class="card fade-in" style="animation-delay: 60ms">
+            <div class="card-header">
+                <div class="card-source">人民日报公众号 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">重要提醒：尽快撤离伊朗！</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 18:57:00 +0800"></div>
+            
+            <div class="card-snippet">近日，伊朗面临外部安全风险显著上升，多国发布建议本国公民撤离提醒。鉴于伊朗当前安全形势，外交部和中国驻伊朗使领馆提醒中国公民暂勿前往伊朗，在当地中国公民加强安全防范，尽快撤离。中国驻伊朗及其周边国家使领馆将为中国公民通过商业航班或陆路转移提供必要协助。联系方式：外交部全球领事保护与服务应急热线（24小时）： +86-10-12308 +86-10-65612308驻伊朗使馆领事保护与协助电话：+9...</div>
+        </a>
+    
+        <a href="http://weixin.sogou.com/weixin?type=2&query=%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5+%E8%AE%B0%E5%BE%97%E6%8A%AC%E5%A4%B4%EF%BC%812026%E5%B9%B4%E2%80%9C%E5%A4%B4%E5%8F%B7%E5%A4%A9%E8%B1%A1%E2%80%9D%E8%A6%81%E6%9D%A5%E4%BA%86~" target="_blank" class="card fade-in" style="animation-delay: 90ms">
+            <div class="card-header">
+                <div class="card-source">人民日报公众号 </div>
+            </div>
+            
+            <h3 class="card-title">记得抬头！2026年“头号天象”要来了~</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 18:32:00 +0800"></div>
+            
+            <div class="card-snippet">正月十五（3月3日）元宵佳节将至又到一年赏月时一场月全食将在当晚上演北京天文馆专家表示这是本年度我国境内可见的“头号天象”非常值得期待△2025年9月8日，北京夜空现月全食景观。这次月食我国东部地区可见完整的全食阶段中部地区能看到带食月出直到复圆西部地区则可见生光到复原的过程此次月全食的具体时刻（北京时间）为：本次月食初亏发生于3月3日17时49分，此时，只有东北地区能够在地平线之上看到月亮。19...</div>
+        </a>
+    
+        <a href="http://weixin.sogou.com/weixin?type=2&query=%E4%BA%BA%E6%B0%91%E6%97%A5%E6%8A%A5+%E9%AB%98%E5%B8%82%E6%97%A9%E8%8B%97%E6%9C%89%E9%BA%BB%E7%83%A6%E4%BA%86" target="_blank" class="card fade-in" style="animation-delay: 120ms">
+            <div class="card-header">
+                <div class="card-source">人民日报公众号 </div>
+            </div>
+            
+            <h3 class="card-title">高市早苗有麻烦了</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 15:51:00 +0800"></div>
+            
+            <div class="card-snippet">“送礼”事件曝光 高市早苗有麻烦了日本多家媒体披露，日本首相高市早苗在本月国会众议院选举后，以“祝贺当选”为名，向300多名自民党籍众议员发放礼品，涉嫌违反日本《政治资金规正法》。这一事件迅速在日本引发巨大争议。高市25日在国会参议院就此受到在野党质询，并有政界人士表示这令人产生“难以抑制的愤怒”。日本舆论认为，此事牵出高市一直以来受到争议的政治信用问题，不仅将影响高市正在力推的新一财年预算案审议...</div>
+        </a>
+    
+            </div>
+        </section>
+        
+        </div>
+
+        <div id="tab-xinhua" class="tab-content">
+            
+        <section>
+            
+            <div class="briefing-box">
+                <h3 class="briefing-title">📋 AI 要点摘要</h3>
+                <h3>🔹 伊朗核问题紧张局势出现关键缓和信号</h3>
+<p><strong>背景与意义</strong>：阿曼外交大臣的表态（伊朗同意不拥有“可制造核弹的核材料”）与伊拉克、伊朗外长通话强调谈判解决分歧，共同指向伊核问题外交解决渠道仍在积极运作。这为近期因以色列-伊朗冲突而高度紧张的局势提供了一个潜在的降温点，回应了国际社会对核扩散与地区冲突升级的深切担忧。</p>
+<h3>🔹 地区安全风险高企，多国采取预防性措施</h3>
+<p><strong>背景与意义</strong>：中国使馆发布安全提醒、法国建议公民避免前往以色列等地、土耳其航空公司调整赴伊朗航班（日间正常但伊斯坦布尔机场取消航班），这些行动均表明相关国家研判中东地区（特别是伊朗、以色列周边）安全形势依然脆弱且存在不确定性。各国正通过外交预警和航空管制来保护本国公民，防范突发安全事件。</p>
+<h3>🔹 国际能源与金融市场受地缘政治波动影响显著</h3>
+<p><strong>背景与意义</strong>：新闻中国际油价上涨、美元指数下跌、纽约股市下跌，这些市场波动与中东紧张局势（特朗普对伊核谈判表态、地区冲突风险）直接相关。这体现了地缘政治风险已成为影响全球能源供应预期和投资者风险偏好的关键变量，市场正对潜在的区域冲突及其经济后果进行定价。</p>
+<h3>🔹 美国对伊政策保持强硬施压姿态</h3>
+<p><strong>背景与意义</strong>：特朗普公开表示对伊核谈判进展不满，并称尚未就动武作最终决定。这释放了美国维持“极限施压”策略的信号，旨在为外交谈判设定底线并增加筹码，但同时“未决定动武”的表述也保留了回旋空间，避免立即激化矛盾。美国的立场仍是影响伊核问题走向的最大外部因素。</p>
+<h3>🔹 其他国际事件凸显地区不稳定与意外风险</h3>
+<p><strong>背景与意义</strong>：毛里求斯与马尔代夫断交、阿富汗指控巴基斯坦跨境袭击造成伤亡、意大利米兰发生致命电车事故。这些事件虽与中东主线无直接关联，但分别反映了印度洋地区外交争端、南亚边境冲突频发、以及欧洲基础设施安全等不同维度的国际风险点，共同构成了当前复杂多变的全球局势背景。</p>
+
+            </div>
+        
+            
+            <div class="grid">
+                
+        <a href="http://www.news.cn/20260228/e6157d8371224632b90be22437968500/c.html" target="_blank" class="card fade-in" style="animation-delay: 0ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">阿曼外交大臣：伊朗已同意不拥有“可制造核弹的核材料”</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 23:15:35 GMT"></div>
+            
+            <div class="card-snippet">新华社华盛顿2月27日电 阿曼外交大臣巴德尔27日在华盛顿接受美国哥伦比亚广播公司采访时称，伊朗已同意不拥有“可制造核弹的核材料”。</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/66c71038970546a988b3ade7b0a8bf54/c.html" target="_blank" class="card fade-in" style="animation-delay: 30ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">土耳其航空公司：飞往伊朗的日间航班正常运营</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 23:03:33 GMT"></div>
+            
+            <div class="card-snippet">新华社伊斯坦布尔2月27日电 土耳其航空公司公关部门27日晚说，该航空公司飞往伊朗机场的日间航班仍按计划运营。 土航公关部门的一名负责人叶海亚·乌斯通在社交媒体上发文，就此前涉及土航航班调整的消息作出澄清。他说，社交媒体上流传的有关土航取消飞往伊朗航班的消息并不属实，该航司日间航班均按计划正常运营。 27日晚稍早时候，土耳其伊斯坦布尔机场航班信息显示，土航和两家伊朗航空公司当晚自该机场飞往伊朗首都...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/a669392a1d384ec88fd944ae35f0926f/c.html" target="_blank" class="card fade-in" style="animation-delay: 60ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 <span class="badge hot">🔥 重要</span></div>
+            </div>
+            
+            <h3 class="card-title">意大利米兰电车脱轨事故已造成两死49伤</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 21:49:58 GMT"></div>
+            
+            <div class="card-snippet">新华社罗马2月27日电（记者张馨文）意大利北部城市米兰27日下午发生有轨电车脱轨事故，截至目前已造成两人死亡，报告的受伤人数已上升至49人。 据意大利广播电视公司网站报道，首个遇难者为一名被电车撞倒的行人，第二名遇难者是送医后不治身亡的乘客。伤者中还有两人情况危急。有关部门仍在调查电车脱轨原因。 另据意大利安莎通讯社报道，初步调查显示，事故发生时电车车速很快，司机在事发后说“我当时感觉很不舒服”。...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/b7e9befaee424f95af843fca585860f5/c.html" target="_blank" class="card fade-in" style="animation-delay: 90ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">纽约股市三大股指27日下跌</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #ef4444" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏥 健康中国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 21:36:43 GMT"></div>
+            
+            <div class="card-snippet">新华社纽约2月27日电 纽约股市三大股指27日下跌。 截至当天收盘，道琼斯工业平均指数比前一交易日下跌521.28点，收于48977.92点，跌幅为1.05%；标准普尔500种股票指数下跌29.98点，收于6878.88点，跌幅为0.43%；纳斯达克综合指数下跌210.17点，收于22668.21点，跌幅为0.92%。 板块方面，标普500指数十一大板块九涨二跌。医疗板块和能源板块分别以1.77%...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/235302b545274bd2af49e9a288d7d0b2/c.html" target="_blank" class="card fade-in" style="animation-delay: 120ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">毛里求斯宣布中止与马尔代夫“一切外交关系”</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 21:35:49 GMT"></div>
+            
+            <div class="card-snippet">新华社塔那那利佛2月27日电（记者陈绍华）路易港消息：毛里求斯外交、地区一体化和国际贸易部27日向媒体发布公报说，毛里求斯共和国即日起中止与马尔代夫共和国“一切外交关系”。 公报说，此项决定基于马尔代夫政府近期所持立场，即其不再承认毛里求斯对查戈斯群岛的主权及毛里求斯领土完整，并反对毛里求斯与英国之间的协议。 公报说，该决定体现了毛里求斯致力于维护国家利益和坚持主权原则的承诺，以及对《联合国宪章》...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/0eecdaa108cf4c3f851646b34d9481ca/c.html" target="_blank" class="card fade-in" style="animation-delay: 150ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">美元指数27日下跌</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 20:45:53 GMT"></div>
+            
+            <div class="card-snippet">新华社纽约2月27日电 美元指数27日下跌。 衡量美元对六种主要货币的美元指数当天下跌0.19%，在汇市尾市收于97.608。 截至纽约汇市尾市，1欧元兑换1.1819美元，高于前一交易日的1.1786美元；1英镑兑换1.3475美元，高于前一交易日的1.3470美元。 1美元兑换155.95日元，低于前一交易日的156.34日元；1美元兑换0.7679瑞士法郎，低于前一交易日的0.7747瑞士法...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/8c507b923f8e49669924d564c9e87a49/c.html" target="_blank" class="card fade-in" style="animation-delay: 180ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">国际油价27日上涨</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 20:45:48 GMT"></div>
+            
+            <div class="card-snippet">新华社纽约2月27日电 国际油价27日上涨。 截至当天收盘，纽约商品交易所4月交货的轻质原油期货价格上涨1.81美元，收于每桶67.02美元，涨幅为2.78%；4月交货的伦敦布伦特原油期货价格上涨1.73美元，收于每桶72.48美元，涨幅为2.45%。</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/be3cec882de049179aefd5c06929fa44/c.html" target="_blank" class="card fade-in" style="animation-delay: 210ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">特朗普：不满意伊核谈判进展 尚未就动武作最终决定</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 20:16:10 GMT"></div>
+            
+            <div class="card-snippet">新华社华盛顿2月27日电（记者徐剑梅 黄强）美国总统特朗普27日表示，他“不满意”当前伊核谈判进展，但尚未就是否对伊朗发动军事打击作出最终决定。 他在离开白宫时对记者说，谈判中，伊朗不愿意向美国提供美方“应得的东西”，他“很不满意”。 特朗普说，美国尚未就是否对伊朗发起军事打击作出最终决定，将观察“进一步谈判后会发生什么”。 特朗普还说，他不想动武，“但有时候不得不这么做”。他重申不允许伊朗拥有核...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/756c5ac4fa764fd58c00832123cc0333/c.html" target="_blank" class="card fade-in" style="animation-delay: 240ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">中国使馆提醒在伊朗中国公民密切关注安全形势</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 19:31:40 GMT"></div>
+            
+            <div class="card-snippet">当地时间27日晚，中国驻伊朗大使馆发布安全提示说，在伊中国公民需密切关注安全形势变化，加强防范意识。 新华社德黑兰2月27日电 当地时间27日晚，中国驻伊朗大使馆发布安全提示说，在伊中国公民需密切关注安全形势变化，加强防范意识。 提示说，近日，伊朗面临外部安全风险显著上升，中国驻伊朗使领馆郑重提醒在伊中国公民密切关注安全形势变化，加强防范意识，切勿拍摄政府机构、军事设施等敏感场所，留意“禁止拍照”...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/478d613404554c2e9258cf0d48247f9b/c.html" target="_blank" class="card fade-in" style="animation-delay: 270ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">伊拉克和伊朗外长通话 强调应通过谈判解决分歧</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 19:01:07 GMT"></div>
+            
+            <div class="card-snippet">伊拉克外交部27日发表声明说，伊拉克外长侯赛因当天与伊朗外长阿拉格齐通电话，双方强调通过谈判解决问题是最恰当的方式，呼吁避免地区局势升级和战争风险、维护地区安全与稳定。 新华社巴格达2月27日电（记者李军 段敏夫）伊拉克外交部27日发表声明说，伊拉克外长侯赛因当天与伊朗外长阿拉格齐通电话，双方强调通过谈判解决问题是最恰当的方式，呼吁避免地区局势升级和战争风险、维护地区安全与稳定。 声明说，双方在通...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/6892087bbbba489cbb91cee8829de9e5/c.html" target="_blank" class="card fade-in" style="animation-delay: 300ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">阿富汗：巴基斯坦再次袭击阿东部省份致19死26伤</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 19:00:46 GMT"></div>
+            
+            <div class="card-snippet">阿富汗政府副发言人哈姆杜拉·菲特拉特27日晚间在社交媒体上发文称，巴基斯坦军方再次袭击阿富汗东部霍斯特省和帕克提卡省的居民区，造成至少19名平民死亡、26人受伤。该官员说，伤亡者大多数是妇女和儿童。 新华社喀布尔2月27日电（记者李昂）阿富汗政府副发言人哈姆杜拉·菲特拉特27日晚间在社交媒体上发文称，巴基斯坦军方再次袭击阿富汗东部霍斯特省和帕克提卡省的居民区，造成至少19名平民死亡、26人受伤。该...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/12a1acbf683349c69ca39372793f7e7c/c.html" target="_blank" class="card fade-in" style="animation-delay: 330ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">土耳其伊斯坦布尔机场取消飞往德黑兰的航班</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 18:48:15 GMT"></div>
+            
+            <div class="card-snippet">土耳其伊斯坦布尔机场27日晚宣布，取消土耳其航空公司和两家伊朗航空公司自该机场飞往伊朗首都德黑兰伊玛目霍梅尼国际机场的航班。 新华社安卡拉2月27日电（记者熊思浩）土耳其伊斯坦布尔机场27日晚宣布，取消土耳其航空公司和两家伊朗航空公司自该机场飞往伊朗首都德黑兰伊玛目霍梅尼国际机场的航班。 此外，土耳其航空公司原定28日凌晨飞往伊朗西北部城市大不里士的航班也被取消。</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/641cbb6d68394bdeae388f75a3e54632/c.html" target="_blank" class="card fade-in" style="animation-delay: 360ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">伦敦股市26日上涨</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 18:29:37 GMT"></div>
+            
+            <div class="card-snippet">英国伦敦股市《金融时报》100种股票平均价格指数27日报收于10910.55点，较前一交易日上涨63.85点，涨幅为0.59%。欧洲三大股指当天涨跌不一。 新华社伦敦2月27日电（记者赵小娜）英国伦敦股市《金融时报》100种股票平均价格指数27日报收于10910.55点，较前一交易日上涨63.85点，涨幅为0.59%。欧洲三大股指当天涨跌不一。 当天伦敦股市成分股中位于涨幅前五位的个股分别为：酒业...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/bda1390e3b75455ba90a71cc4884cc80/c.html" target="_blank" class="card fade-in" style="animation-delay: 390ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">意大利米兰一辆电车脱轨造成一死多伤</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 17:50:20 GMT"></div>
+            
+            <div class="card-snippet">当地时间27日下午，意大利北部城市米兰一辆有轨电车发生脱轨事故，造成至少一人死亡、39人受伤。 新华社罗马2月27日电（记者张馨文）当地时间27日下午，意大利北部城市米兰一辆有轨电车发生脱轨事故，造成至少一人死亡、39人受伤。 据意大利广播电视公司网站报道，事发车辆为9路有轨电车，在经过威尼斯门附近区域时发生脱轨，电车撞上建筑物。 遇难者为一名被电车撞倒的行人，伤者中有一人情况危急。 报道称，目前...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/35bda1dbb34344068750aae3071e6be1/c.html" target="_blank" class="card fade-in" style="animation-delay: 420ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">法国建议本国公民暂时避免前往以色列等地</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:35:59 GMT"></div>
+            
+            <div class="card-snippet">法国外交部27日发布公报，建议本国公民暂时避免前往以色列、耶路撒冷和约旦河西岸地区。 新华社巴黎2月27日电（记者孙毅）法国外交部27日发布公报，建议本国公民暂时避免前往以色列、耶路撒冷和约旦河西岸地区。</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/26ee02b9d2e34e01880ed5c144143338/c.html" target="_blank" class="card fade-in" style="animation-delay: 450ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">克林顿就爱泼斯坦案接受国会问询</h3>
+            
+            
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:23:14 GMT"></div>
+            
+            <div class="card-snippet">美国前总统比尔·克林顿27日在纽约州就爱泼斯坦案接受国会人员问询。克林顿夫人、美国前国务卿希拉里·克林顿已于26日接受问询。 新华社纽约2月27日电（记者施春）美国前总统比尔·克林顿27日在纽约州就爱泼斯坦案接受国会人员问询。克林顿夫人、美国前国务卿希拉里·克林顿已于26日接受问询。</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/6d25191ca1894ba5a12fb06e18ac1cfc/c.html" target="_blank" class="card fade-in" style="animation-delay: 480ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">美国否认从伊拉克和科威特撤出非必要外交人员</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #475569" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛡️ 国家安全
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:22:51 GMT"></div>
+            
+            <div class="card-snippet">美国国务院27日否认从伊拉克和科威特撤出非必要外交人员。 新华社华盛顿2月27日电 美国国务院27日否认从伊拉克和科威特撤出非必要外交人员。 当天早些时候，有媒体报道，美国国务院批准从伊拉克和科威特撤出非必要外交人员。美国国务院首席副发言人汤米·皮戈特在社交媒体上转发有关报道，并评论“这个消息不实”。 沙特阿拉比亚电视台27日援引安全部门人士的话说，美国公民在过去24小时内频繁经巴格达国际机场离开...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/05553447d50640ca8c6a955f9a8b017c/c.html" target="_blank" class="card fade-in" style="animation-delay: 510ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">澳门特区政府力争今年内完成设立政府引导基金</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #6366f1" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        📚 教育强国
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #f43f5e" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏠 民生福祉
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:06:59 GMT"></div>
+            
+            <div class="card-snippet">新华社澳门2月27日电（记者齐菲、郭雨祺）澳门特区政府27日在澳门科学馆举行政府引导基金新闻发布会，介绍政府引导基金方案，表示力争今年内完成设立。 会上，特区政府经济财政司司长戴建业表示，为对接国家“十五五”规划，特区政府计划通过设立政府引导基金发挥引领作用。经综合考虑，初步计划以财政储备历年滚存的收益向基金注资110亿澳门元，联同首批社会资本设立政府引导基金，预期规模为200亿澳门元，期望借此汇...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/fed1f1aa867546138852efd3d1e91314/c.html" target="_blank" class="card fade-in" style="animation-delay: 540ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">第54届香港艺术节开幕 超1100位艺术家呈献180场演出</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #d946ef" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🎭 文化强国
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:06:55 GMT"></div>
+            
+            <div class="card-snippet">新华社香港2月27日电 第54届香港艺术节27日在香港文化中心开幕。本届香港艺术节云集超过1100位来自香港、内地及海外的优秀艺术家，呈献超过45套精彩节目、180场演出。 香港特区行政长官李家超在开幕典礼上致辞表示，香港艺术节是国际艺坛瞩目的文化盛事，既为海内外顶尖艺术家提供展现创新意念和艺术造诣的舞台，也为广大观众带来世界级的精彩节目。艺术节不仅是表演艺术的荟萃，更是不同文化对话、多元艺术形式...</div>
+        </a>
+    
+        <a href="http://www.news.cn/20260228/604c116cbb0148fcae519146eb4ad47f/c.html" target="_blank" class="card fade-in" style="animation-delay: 570ms">
+            <div class="card-header">
+                <div class="card-source">新华社微信 </div>
+            </div>
+            
+            <h3 class="card-title">“苏超”摇号产生拟中选小微企业</h3>
+            
+            
+            <div class="plan-tags">
+                
+                    <span class="plan-tag" style="--tag-color: #f59e0b" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🛒 扩大内需
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #ec4899" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        ⚖️ 深化改革
+                    </span>
+                
+                    <span class="plan-tag" style="--tag-color: #94a3b8" onclick="openTab('tab-plan'); event.preventDefault(); event.stopPropagation();">
+                        🏛️ 国家治理
+                    </span>
+                
+            </div>
+        
+            
+            <div class="card-meta" data-date="Fri, 27 Feb 2026 16:06:24 GMT"></div>
+            
+            <div class="card-snippet">新华社南京2月27日电（记者王恒志）奶茶店、卤菜店、小吃部、捆蹄厂、水产品公司……2026江苏省城市足球联赛（“苏超”）小微企业商务遴选合作抽签摇号27日在南京市石城公证处举行，经过摇号产生的32家拟中选小微企业中，不乏这些“身边的小店”。 为体现“大小品牌共赢”，进一步优化营商环境、激活市场主体活力与创造力，“苏超”组委会今年1月底发布小微企业商务遴选合作方案，省级层面共遴选32家，每家赞助金额...</div>
+        </a>
+    
+            </div>
+        </section>
+        
+        </div>
+
+        <div id="tab-trend" class="tab-content">
+            
+                <div class="trend-report">
+                    <p>以下为您生成的政策发展趋势报告，基于提供的2026年2月22日至28日的官方媒体报道内容分析而成。报告严格遵循您设定的结构，聚焦于可识别、有明确政策含义或重大国家行为导向的新闻事件，并剔除了纯生活、娱乐及常规社会新闻。</p>
+<hr>
+<h2>📊 本周核心政策动向</h2>
+<ol>
+<li><p><strong>党的政治建设与思想教育深化</strong>：中共中央办公厅印发《通知》，在全党部署开展“树立和践行正确政绩观”学习教育。这标志着党的自我建设进一步向深层次价值观和行为准则延伸，旨在从思想根源上引导领导干部的施政行为，杜绝形式主义和脱离实际的“政绩工程”。</p>
+</li>
+<li><p><strong>科技自立自强战略持续推进</strong>：媒体报道“北大团队实现芯片领域重要突破”，结合此前对航天科研人员被策反（间谍案）的警示性报道，政策信号明确：一方面鼓励并展示关键核心技术的攻关成果，另一方面持续强调科技领域的国家安全与保密纪律，构成“鼓励创新”与“严防风险”的双轮驱动。</p>
+</li>
+<li><p><strong>大国外交与战略沟通保持主动</strong>：习近平主席会见德国总理默茨，外交部确认就“特朗普总统访华事宜”保持沟通。这表明中国在复杂国际形势下，仍积极推动与欧洲（德国作为欧盟核心）及美国（作为最重要的双边关系之一）的高层战略对话，旨在稳定外部环境，管理大国关系。</p>
+</li>
+<li><p><strong>国家安全与社会稳定底线强化</strong>：本周连续出现“航天科研人员留学被策反”的间谍案件披露以及“15岁女孩遭当街暴打”的官方快速通报。政策层面显示出对 <strong>“政治安全”</strong>（反间谍警示教育）和 <strong>“社会安全”</strong>（对恶性治安事件的权威回应与舆情管理）的高度敏感与零容忍态度，体现了统筹发展与安全的总体思路。</p>
+</li>
+<li><p><strong>体育成就与国家形象塑造</strong>：中共中央、国务院向冬奥会中国体育代表团致贺电，并高频报道谷爱凌夺金等赛事佳绩。这超越了单纯的体育新闻范畴，是运用“体育外交”和“榜样力量”提升民族凝聚力、展示国家软实力的系统性政策行为的一部分。</p>
+</li>
+</ol>
+<h2>📈 趋势变化分析</h2>
+<p>相较于前几周可能更侧重于经济部署与民生保障（从新闻列表推断，缺少前期对比数据，此为基于政策逻辑的推演），本周政策议题的分布呈现以下变化：</p>
+<ul>
+<li><strong>侧重点转移</strong>：从常规的经济社会运行，显著转向 <strong>“政治建设”</strong> 与 <strong>“安全议题”</strong>。正确政绩观学习是自上而下的党内重大主题教育活动的延续和深化，间谍案与治安案件的并重报道，则凸显了“国家安全观”涵盖政治、社会等多维度的实践。</li>
+<li><strong>表达方式结合</strong>：在严肃的政治、安全议题之外，通过 <strong>“体育捷报”</strong> 这种高公众参与度、高情感正向的事件进行对冲与引导，形成了“刚柔并济”的舆论场塑造策略，既强调纪律与底线，也庆祝成就与荣耀。</li>
+<li><strong>对外姿态的连续性</strong>：与德国、美国的高层互动，表明中国在外交上保持了一贯的连续性和主动性，并未因内部政治议程而放缓对外战略沟通的步伐，体现了“内外统筹”的特征。</li>
+</ul>
+<h2>⚠️ 值得关注的信号</h2>
+<ol>
+<li><strong>“政绩观”学习的具体化</strong>：从一般性的理论学习，到专门针对“政绩观”进行学习教育，可能预示着下一步对地方领导干部的考核、督查与问责机制将有更具体的调整，与高质量发展考核体系的衔接将更紧密。</li>
+<li><strong>“职场文化”议题的浮现</strong>：新闻中提及 <strong>“‘领导不走我不走’，没有功劳也有苦劳？”</strong> 的讨论，虽然以问句形式出现，但官方媒体将其作为议题提出，可能是在为后续倡导高效、务实、反对形式主义和无效内卷的职场文化新风做舆论铺垫，或与整治“官僚主义”、“懒政怠政”相呼应。</li>
+<li><strong>科技安全议题的“案例教学”化</strong>：以具体、生动的间谍策反案例进行公开报道，远超一般性的保密提醒。这相当于一次面向全社会，特别是科研、留学人员的“国家安全公开课”，信号强烈，预示相关领域的警示教育与制度防范将持续加码。</li>
+<li><strong>对外表述中的“确定性”</strong>：外交部对特朗普访华事宜的表述为 <strong>“保持着沟通”</strong> ，这是一种冷静、专业且留有余地的外交辞令。与以往可能出现的热烈期待或消极回避的表述均不同，显示出在处理高度不确定的大国关系时，中方更注重保持战略定力和沟通管道的畅通。</li>
+</ol>
+<h2>🔮 下周研判</h2>
+<p>基于本周奠定的基调，预计下周政策关注点及媒体报道可能侧重以下方向：</p>
+<ol>
+<li><strong>政绩观学习教育的部署展开</strong>：各地、各部门如何响应中办《通知》要求，可能会涌现相关学习动态、研讨会或地方主官的表态文章，成为党建宣传的重点。</li>
+<li><strong>科技与产业政策的衔接</strong>：围绕“芯片突破”等成果，舆论可能进一步导向对“新型举国体制”、产学研融合、人才培养等配套政策的讨论，或有相关部门（如工信部、科技部）的政策吹风。</li>
+<li><strong>社会综合治理与舆情回应</strong>：针对“当街暴打”等事件，政法系统或宣传部门可能跟进，强调法治建设、未成年人保护或见义勇为，形成一波社会治理主题宣传。</li>
+<li><strong>外交动向的后续发展</strong>：中德领导人会晤的具体成果可能陆续释放；中美沟通的相关动态仍是焦点，任何进展或波折都会引发高度关注。</li>
+<li><strong>潜在的经济民生政策预热</strong>：虽然本周不突出，但“油价调整”等新闻提示经济民生基础议题仍在议程中。结合“开工”等时间节点，不排除有稳就业、促消费等方面的温和政策信号或权威解读出现。</li>
+</ol>
+<hr>
+<p><strong>报告说明</strong>：本分析基于提供的有限新闻标题摘要，旨在识别宏观政策导向与潜在信号。更精确的趋势把握需要结合新闻全文内容、官方通稿措辞及多信源交叉验证。</p>
+
+                </div>
+            
+        </div>
+    </main>
+
+    <script>
+        if (window.self !== window.top) {
+            document.body.classList.add('embedded');
+        }
+
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
+            window.scrollTo(0, 0);
+        }
+
+        // 客户端相对时间计算
+        function formatRelativeTime(dateStr) {
+            try {
+                const date = new Date(dateStr);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffSec = Math.floor(diffMs / 1000);
+                const diffMin = Math.floor(diffSec / 60);
+                const diffHour = Math.floor(diffMin / 60);
+                const diffDay = Math.floor(diffHour / 24);
+                
+                if (diffDay > 30) {
+                    return date.toLocaleDateString('zh-CN');
+                } else if (diffDay > 0) {
+                    return diffDay + ' 天前';
+                } else if (diffHour > 0) {
+                    return diffHour + ' 小时前';
+                } else if (diffMin > 0) {
+                    return diffMin + ' 分钟前';
+                } else {
+                    return '刚刚';
+                }
+            } catch (e) {
+                return '最近';
+            }
+        }
+
+        // 页面加载时更新所有时间显示
+        document.querySelectorAll('.card-meta[data-date]').forEach(el => {
+            const dateStr = el.getAttribute('data-date');
+            el.textContent = formatRelativeTime(dateStr);
+        });
+    </script>
+</body>
+</html>
